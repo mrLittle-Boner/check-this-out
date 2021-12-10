@@ -2,13 +2,17 @@
   <div class="list">
     <div class="list__title">
       <input type="checkbox">
-      <h3>List {{ listNumber }}</h3>
+      <h3>List {{ id }}</h3>
     </div>
 
     <ul class="list__items">
       <li class="list__item" v-for="(item,index) in items" :key="index">
         <label>
-          <input type="checkbox">
+          <input
+            type="checkbox"
+            :checked="item.isSelected"
+            @change="$emit('toggleItemSelect', id, index)"
+          >
           <span>Item {{ index+1 }}</span>
         </label>
         <div class="list__item-controls">
@@ -17,7 +21,7 @@
             class="list__item-color"
             type="color"
             v-model="item.color"
-            @change="(e) => $emit('changeColor', listNumber,index, e.target.value)"
+            @change="(e) => $emit('changeColor', id,index, e.target.value)"
           >
         </div>
       </li>
@@ -28,13 +32,13 @@
 <script>
 
 export default {
-  emits:['changeColor'],
+  emits:['changeColor', 'toggleItemSelect'],
   props: {
     items: {
       type: Array,
       required: true
     },
-    listNumber: {
+    id: {
       type: Number,
       required: true
     }
@@ -73,5 +77,4 @@ export default {
   align-items: center;
   gap: 8px;
 }
-
 </style>

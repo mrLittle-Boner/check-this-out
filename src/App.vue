@@ -1,35 +1,38 @@
 <template>
-  <div class="lists">
-    <AList
+  <div class="left">
+    <ListControls
       v-for="(list,index) in lists" :key="index"
-      :listNumber="list.id" :items="list.items"
+      :id="list.id" :items="list.items"
       @changeColor="changeColor"
+      @toggleItemSelect="toggleItemSelect"
     />
   </div>
-  <div class="lists-view">
-    <ul class="lists-view__list" v-for="list in lists" :key="list.id">
-      <li class="list-view__title">List {{ list.id }}</li>
-      <li class="lists-view__item" v-for="(item,index) in list.items" :key="index">
-        <span class="list-view__square" :style="{'background-color': item.color}" v-for="(n) in item.count" :key="n"></span>
-      </li>
-    </ul>
+
+  <div class="right">
+    <ListView
+      v-for="list in lists" :key="list.id"
+      :id="list.id"
+      :items="list.items"
+    />
   </div>  
 </template>
 
 <script>
-import AList from './components/AList.vue'
+import ListControls from './components/ListControls.vue'
+import ListView from './components/ListView.vue'
+
 import { ref } from 'vue'
 export default {
-  components: { AList },
+  components: { ListControls, ListView },
   setup() {
     const lists = ref([
       {id:1, 
         items:[
-          {count:4, color:'#ffffff'},
-          {count:7, color:'#000000'},
-          {count:12, color:'#ff00e1'},
-          {count:5, color:'#00c9b2'},
-          {count:2, color:'#333333'}
+          {count:4, color:'#ffffff', isSelected: true},
+          {count:7, color:'#000000', isSelected: true},
+          {count:12, color:'#ff00e1', isSelected: true},
+          {count:5, color:'#00c9b2', isSelected: true},
+          {count:2, color:'#333333', isSelected: true}
         ]
       }
     ])
@@ -38,14 +41,19 @@ export default {
       lists.value.map(list => {
         if(list.id === listId) {
           list.items[itemInedx].color = newColor
-          console.log(listId,itemInedx,newColor)
         }
       })
     }
 
-    return {
-      lists,changeColor
+    function toggleItemSelect(listId,itemInedx) {
+      lists.value.map(list => {
+        if(list.id === listId) {
+          list.items[itemInedx].isSelected = !list.items[itemInedx].isSelected
+        }
+      })
     }
+
+    return { lists, changeColor, toggleItemSelect }
   },
 }
 </script>
@@ -68,29 +76,10 @@ ul {
   display: flex;
   justify-content: space-between;
 }
-.lists,
-.lists-view {
+.left,
+.right {
   border: 1px solid tomato;
   width: 40%;
   padding: 20px;
-}
-
-.lists-view__list {
-  border: 1px solid tomato;
-  padding: 10px;
-}
-
-.lists-view__item {
-  background-color: #eee;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  padding: 5px;
-}
-.list-view__square {
-  width: 12px;
-  height: 12px;
-  display: inline-block;
-  cursor: pointer;
 }
 </style>
