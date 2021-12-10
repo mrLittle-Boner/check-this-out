@@ -2,14 +2,16 @@
   <ul class="view">
     <li class="view__title">List {{ id }}</li>
     <li
-    v-for="(item,index) in items"
-    class="view__item"
-    :class="{'view__item--hide': !item.isSelected}"
-    :key="index">
+      v-for="(item,index) in items"
+      class="view__item"
+      :class="{'view__item--hide': !item.isSelected || item.count < 1}"
+      :key="index"
+    >
       <span 
         class="view__square"
         :style="{'background-color': item.color}" 
         v-for="n in item.count" :key="n"
+        @click="$emit('deleteSquare', id,index)"
       ></span>
     </li>
   </ul>
@@ -17,6 +19,7 @@
 
 <script>
 export default {
+  emits:['deleteSquare'],
   props: {
     id: {
       type:Number,

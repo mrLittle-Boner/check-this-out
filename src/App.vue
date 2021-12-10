@@ -5,6 +5,8 @@
       :id="list.id" :items="list.items"
       @changeColor="changeColor"
       @toggleItemSelect="toggleItemSelect"
+      @changeCount="changeCount"
+      @toggleAllItems="toggleAllitems"
     />
   </div>
 
@@ -13,6 +15,7 @@
       v-for="list in lists" :key="list.id"
       :id="list.id"
       :items="list.items"
+      @deleteSquare="deleteSquare"
     />
   </div>  
 </template>
@@ -34,7 +37,7 @@ export default {
           {count:5, color:'#00c9b2', isSelected: true},
           {count:2, color:'#333333', isSelected: true}
         ]
-      }
+      },
     ])
 
     function changeColor(listId,itemInedx,newColor) {
@@ -45,6 +48,19 @@ export default {
       })
     }
 
+    function changeCount(listId,itemInedx,newCount){
+      if(newCount < 0) {
+        alert("New value should be more or equal to 0")
+      }
+      else {
+        lists.value.map(list => {
+          if(list.id === listId) {
+            list.items[itemInedx].count = newCount
+          }
+        })
+      }
+    }
+
     function toggleItemSelect(listId,itemInedx) {
       lists.value.map(list => {
         if(list.id === listId) {
@@ -53,7 +69,28 @@ export default {
       })
     }
 
-    return { lists, changeColor, toggleItemSelect }
+    function deleteSquare(listId,itemInedx) {
+      lists.value.map(list => {
+        if(list.id === listId) {
+          list.items[itemInedx].count--
+        }
+      })
+    }
+
+    function toggleAllitems(listId){
+      lists.value.map(list => {
+        const isAllItemsSelected = list.items.every(item => item.isSelected)
+        console.log(isAllItemsSelected)
+        if(list.id === listId && isAllItemsSelected) {
+          list.items.map(item => item.isSelected = false)
+        }
+        if(list.id === listId && !isAllItemsSelected) {
+          list.items.map(item => item.isSelected = true)
+        }
+      })
+    }
+
+    return { lists, changeColor, toggleItemSelect, deleteSquare, changeCount, toggleAllitems }
   },
 }
 </script>

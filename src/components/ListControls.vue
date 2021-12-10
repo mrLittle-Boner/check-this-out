@@ -1,9 +1,15 @@
 <template>
   <div class="list">
-    <div class="list__title">
-      <input type="checkbox">
+    <label class="list__title">
+      <input
+        class="list__checkbox"
+        :class="{'list__checkbox--semicecked': !isAllItemsChecked && isSomeItemsChecked}"
+        type="checkbox"
+        :checked="isAllItemsChecked"
+        @change="$emit('toggleAllItems', id)"
+      >
       <h3>List {{ id }}</h3>
-    </div>
+    </label>
 
     <ul class="list__items">
       <li class="list__item" v-for="(item,index) in items" :key="index">
@@ -18,10 +24,17 @@
         <div class="list__item-controls">
           <span class="list__item-count">{{ item.count }}</span>
           <input
+            class="list__item-newcount"
+            type="number"
+            min="1"
+            required
+            @change="(e) => $emit('changeCount', id, index, e.target.valueAsNumber)"
+          >
+          <input
             class="list__item-color"
             type="color"
             v-model="item.color"
-            @change="(e) => $emit('changeColor', id,index, e.target.value)"
+            @change="(e) => $emit('changeColor', id, index, e.target.value)"
           >
         </div>
       </li>
@@ -30,9 +43,10 @@
 </template>
 
 <script>
+import { computed } from '@vue/reactivity'
 
 export default {
-  emits:['changeColor', 'toggleItemSelect'],
+  emits:['changeColor', 'toggleItemSelect','changeCount', 'toggleAllItems'],
   props: {
     items: {
       type: Array,
@@ -43,11 +57,16 @@ export default {
       required: true
     }
   },
-  setup(){
-    function showmeevent(e){
-      console.log(e)
-    }
-    return { showmeevent }
+  setup(props){
+    const isAllItemsChecked = computed(() => {
+      return props.items.every(item => item.isSelected)
+    })
+
+    const isSomeItemsChecked = computed(() => {
+      return props.items.some(item => item.isSelected)
+    })
+
+    return { isAllItemsChecked, isSomeItemsChecked }
   }
 }
 </script>
@@ -76,5 +95,30 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+.list__item-newcount {
+  width: 40px ;
+}
+.list__item-newcount::-webkit-outer-spin-button,
+.list__item-newcount::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.list__item-newcount[type=number] {
+  -moz-appearance: textfield;
+}
+
+.list__checkbox {
+  position: relative;
+}
+
+.list__checkbox--semicecked::before {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 5px;
+    height: 5px;
+    content: " ";
+    background-color: black;
 }
 </style>
