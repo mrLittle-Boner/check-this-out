@@ -1,24 +1,4 @@
-# check-this-out
-
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+# Installation
+  1. Clone/Download repo
+  2. Install dependencies
+  3. Use 'serve' script
