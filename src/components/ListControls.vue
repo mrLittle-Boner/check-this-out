@@ -1,17 +1,20 @@
 <template>
   <div class="list">
-    <label class="list__title">
-      <input
-        class="list__checkbox"
-        :class="{'list__checkbox--semicecked': !isAllItemsChecked && isSomeItemsChecked}"
-        type="checkbox"
-        :checked="isAllItemsChecked"
-        @change="$emit('toggleAllItems', id)"
-      >
-      <h3>List {{ id }}</h3>
-    </label>
+    <div class="list__title">
+      <label>
+        <input
+          class="list__checkbox"
+          :class="{'list__checkbox--semicecked': !isAllItemsChecked && isSomeItemsChecked}"
+          type="checkbox"
+          :checked="isAllItemsChecked"
+          @change="$emit('toggleAllItems', id)"
+        >
+        <h3>List {{ id }}</h3>
+      </label>
+      <span class="list__expand" :class="{'list__expand--rotate': isOpen}" @click="closeOpen">+</span>
+    </div>
 
-    <ul class="list__items">
+    <ul class="list__items" v-if="isOpen">
       <li class="list__item" v-for="(item,index) in items" :key="index">
         <label>
           <input
@@ -44,6 +47,7 @@
 
 <script>
 import { computed } from '@vue/reactivity'
+import { ref } from 'vue'
 
 export default {
   emits:['changeColor', 'toggleItemSelect','changeCount', 'toggleAllItems'],
@@ -58,6 +62,8 @@ export default {
     }
   },
   setup(props){
+    const isOpen = ref(false)
+
     const isAllItemsChecked = computed(() => {
       return props.items.every(item => item.isSelected)
     })
@@ -66,22 +72,38 @@ export default {
       return props.items.some(item => item.isSelected)
     })
 
-    return { isAllItemsChecked, isSomeItemsChecked }
+    function closeOpen() {
+      isOpen.value = !isOpen.value
+    }
+
+    return { isAllItemsChecked, isSomeItemsChecked, isOpen, closeOpen }
   }
 }
 </script>
 
 <style scoped>
-
-.list__title {
-  display: flex;
-  gap: 25px;
-  align-items: center;
+.list {
   margin-bottom: 15px;
 }
+.list__title {
+  display: flex;
+  align-items: center;
+}
+
+.list__title label {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
 .list__items {
+  margin-top: 15px;
   list-style-type: none;
   margin-left: 35px;
+}
+
+.list__items:not(:last-child) {
+  margin-bottom: 10px;
 }
 
 .list__item {
@@ -113,12 +135,22 @@ export default {
 }
 
 .list__checkbox--semicecked::before {
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    width: 5px;
-    height: 5px;
-    content: " ";
-    background-color: black;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 5px;
+  height: 5px;
+  content: " ";
+  background-color: black;
+}
+
+.list__expand {
+  font-size: 34px;
+  margin-left: auto;
+  line-height: 0;
+  cursor: pointer;
+}
+.list__expand--rotate {
+  transform: rotate(45deg);
 }
 </style>

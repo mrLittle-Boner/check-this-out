@@ -31,11 +31,30 @@ export default {
     const lists = ref([
       {id:1, 
         items:[
-          {count:4, color:'#ffffff', isSelected: true},
-          {count:7, color:'#000000', isSelected: true},
-          {count:12, color:'#ff00e1', isSelected: true},
-          {count:5, color:'#00c9b2', isSelected: true},
-          {count:2, color:'#333333', isSelected: true}
+          {count:10, color:'#ffffff', isSelected: true},
+          {count:10, color:'#0022ff', isSelected: true},
+          {count:10, color:'#ff0015', isSelected: true},
+          {count:5, color:'#00c9b2', isSelected: false},
+          {count:2, color:'#333333', isSelected: false}
+        ]
+      },
+      {id:2, 
+        items:[
+          {count:10, color:'#ff0015', isSelected: true},
+          {count:10, color:'#ff6a00', isSelected: true},
+          {count:10, color:'#ffe600', isSelected: true},
+          {count:10, color:'#03ff20', isSelected: true},
+          {count:10, color:'#170ceb', isSelected: true},
+          {count:10, color:'#80007d', isSelected: true}
+        ]
+      },
+      {id:3, 
+        items:[
+          {count:10, color:'#030bfc', isSelected: true},
+          {count:10, color:'#030bfc', isSelected: true},
+          {count:10, color:'#fff700', isSelected: true},
+          {count:10, color:'#fff700', isSelected: true},
+          {count:5, color:'#333333', isSelected: false}
         ]
       },
     ])
@@ -80,7 +99,6 @@ export default {
     function toggleAllitems(listId){
       lists.value.map(list => {
         const isAllItemsSelected = list.items.every(item => item.isSelected)
-        console.log(isAllItemsSelected)
         if(list.id === listId && isAllItemsSelected) {
           list.items.map(item => item.isSelected = false)
         }
