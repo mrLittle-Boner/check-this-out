@@ -7,7 +7,7 @@
           :class="{'list__checkbox--semicecked': !isAllItemsChecked && isSomeItemsChecked}"
           type="checkbox"
           :checked="isAllItemsChecked"
-          @change="$emit('toggleAllItems', id)"
+          @change="$emit('update:modelValue', selectUnselectAllItems())"
         >
         <h3>List {{ id }}</h3>
       </label>
@@ -15,12 +15,11 @@
     </div>
 
     <ul class="list__items" v-if="isOpen">
-      <li class="list__item" v-for="(item,index) in items" :key="index">
+      <li class="list__item" v-for="(item,index) in modelValue" :key="index">
         <label>
           <input
             type="checkbox"
-            :checked="item.isSelected"
-            @change="$emit('toggleItemSelect', id, index)"
+            v-model="item.isSelected"
           >
           <span>Item {{ index+1 }}</span>
         </label>
@@ -31,13 +30,12 @@
             type="number"
             min="1"
             required
-            @change="(e) => $emit('changeCount', id, index, e.target.valueAsNumber)"
+            v-model="item.count"
           >
           <input
             class="list__item-color"
             type="color"
             v-model="item.color"
-            @change="(e) => $emit('changeColor', id, index, e.target.value)"
           >
         </div>
       </li>
@@ -46,37 +44,52 @@
 </template>
 
 <script>
+          // @change="$emit('toggleAllItems', id)"
 import { computed } from '@vue/reactivity'
 import { ref } from 'vue'
 
 export default {
-  emits:['changeColor', 'toggleItemSelect','changeCount', 'toggleAllItems'],
+  emits:[ 'update:modelValue' ],
   props: {
-    items: {
+    modelValue: {
       type: Array,
       required: true
     },
     id: {
       type: Number,
       required: true
-    }
+    },
   },
   setup(props){
     const isOpen = ref(false)
 
     const isAllItemsChecked = computed(() => {
-      return props.items.every(item => item.isSelected)
+      return props.modelValue.every(item => item.isSelected)
     })
 
     const isSomeItemsChecked = computed(() => {
-      return props.items.some(item => item.isSelected)
+      return props.modelValue.some(item => item.isSelected)
     })
 
     function closeOpen() {
       isOpen.value = !isOpen.value
     }
 
-    return { isAllItemsChecked, isSomeItemsChecked, isOpen, closeOpen }
+    function selectUnselectAllItems() {
+      if(this.isAllItemsChecked) {
+        const allItemsWithUnselectedProp = props.modelValue.map(item => {
+          return {...item, isSelected : false}
+        })
+        return allItemsWithUnselectedProp
+      } else {
+        const allItemsWithSelectedProp = props.modelValue.map(item => {
+          return {...item, isSelected : true}
+        })
+        return allItemsWithSelectedProp
+      }
+    }
+
+    return { selectUnselectAllItems, isAllItemsChecked, isSomeItemsChecked, isOpen, closeOpen }
   }
 }
 </script>
