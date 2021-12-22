@@ -1,10 +1,6 @@
 <template>
   <div class="left">
-    <ListControls
-      v-for="(list,index) in lists" :key="index"
-      :id="list.id"
-      v-model='list.items'
-    />
+    <ListControls v-for="(n,i) in lists.length" :key="lists[i].id" v-model='lists[i]' />  
   </div>
 
   <div class="right">

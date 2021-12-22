@@ -9,17 +9,18 @@
           :checked="isAllItemsChecked"
           @change="$emit('update:modelValue', selectUnselectAllItems())"
         >
-        <h3>List {{ id }}</h3>
+        <h3>List {{ modelValue.id }}</h3>
       </label>
       <span class="list__expand" :class="{'list__expand--rotate': isOpen}" @click="closeOpen">+</span>
     </div>
 
     <ul class="list__items" v-if="isOpen">
-      <li class="list__item" v-for="(item,index) in modelValue" :key="index">
+      <li class="list__item" v-for="(item,index) in modelValue.items" :key="index">
         <label>
           <input
             type="checkbox"
-            v-model="item.isSelected"
+            :checked="item.isSelected"
+            @change="$emit('update:modelValue', listWithNewItems(index, 'select', !item.isSelected))"
           >
           <span>Item {{ index+1 }}</span>
         </label>
@@ -30,12 +31,13 @@
             type="number"
             min="1"
             required
-            v-model="item.count"
+            @input="(e) => $emit('update:modelValue', listWithNewItems(index, 'count', +e.target.value))"
           >
           <input
             class="list__item-color"
             type="color"
-            v-model="item.color"
+            :value="item.color"
+            @input="(e) => $emit('update:modelValue', listWithNewItems(index, 'color', e.target.value))"
           >
         </div>
       </li>
@@ -44,31 +46,25 @@
 </template>
 
 <script>
-          // @change="$emit('toggleAllItems', id)"
-import { computed } from '@vue/reactivity'
-import { ref } from 'vue'
+import { computed, ref } from '@vue/reactivity'
 
 export default {
   emits:[ 'update:modelValue' ],
   props: {
     modelValue: {
-      type: Array,
-      required: true
-    },
-    id: {
-      type: Number,
-      required: true
-    },
+      type: Object,
+      required: true,
+    }
   },
   setup(props){
     const isOpen = ref(false)
 
     const isAllItemsChecked = computed(() => {
-      return props.modelValue.every(item => item.isSelected)
+      return props.modelValue.items.every(item => item.isSelected)
     })
 
     const isSomeItemsChecked = computed(() => {
-      return props.modelValue.some(item => item.isSelected)
+      return props.modelValue.items.some(item => item.isSelected)
     })
 
     function closeOpen() {
@@ -76,21 +72,37 @@ export default {
     }
 
     function selectUnselectAllItems() {
+      const copiedItems = [...props.modelValue.items]
       if(this.isAllItemsChecked) {
-        const allItemsWithUnselectedProp = props.modelValue.map(item => {
-          return {...item, isSelected : false}
-        })
-        return allItemsWithUnselectedProp
+        copiedItems.forEach(item => item.isSelected = false)
+        return {...props.modelValue, items: copiedItems}
       } else {
-        const allItemsWithSelectedProp = props.modelValue.map(item => {
-          return {...item, isSelected : true}
-        })
-        return allItemsWithSelectedProp
+        copiedItems.forEach(item => item.isSelected = true)
+        return {...props.modelValue, items: copiedItems}
       }
     }
 
-    return { selectUnselectAllItems, isAllItemsChecked, isSomeItemsChecked, isOpen, closeOpen }
+    function listWithNewItems(itemIndex,type,value) {
+      const copiedItems = [...props.modelValue.items]
+
+      switch(type) {
+        case 'color': 
+          copiedItems[itemIndex].color = value
+          break
+        case 'count':
+          copiedItems[itemIndex].count = value
+          break
+        case 'select':
+          copiedItems[itemIndex].isSelected = value
+          break
+      }
+
+      return {...props.modelValue, items: copiedItems}
+    }
+
+    return { listWithNewItems, selectUnselectAllItems, isAllItemsChecked, isSomeItemsChecked, isOpen, closeOpen }
   }
+
 }
 </script>
 
